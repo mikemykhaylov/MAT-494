@@ -1,0 +1,231 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{lib.bib}
+
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\geometry{margin=1.25in}
+
+\title{MAT 422: Final Project}
+\author{Michael Mykhaylov}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Abalones, marine mollusks of significant ecological and economic importance, pose a unique challenge to age determination through traditional manual methods. This research endeavors to improve the current age prediction process of abalones by harnessing the power of machine learning techniques. In a world where the intricate interplay between environmental factors and biological attributes shapes the growth of these creatures, predicting their age accurately becomes paramount for marine biologists and fisheries alike.
+
+The dataset chosen for this study, originating from Warwick Nash in 1994, encapsulates a comprehensive set of features essential for predicting the age of abalones. By employing a diverse set of predictive models, including multiple linear regression, gradient-boosted decision tree regressors, and neural networks, we aim to navigate through the intricate relationships between physical measurements and age. This approach contributes to the academic understanding of machine learning models and holds practical implications for optimizing the labor-intensive task of manually counting growth rings in abalone shells.
+
+Our methodology, echoing established practices in predictive modeling, will not only shed light on the capabilities and limitations of each model but also contribute novel insights to the burgeoning field of marine ecology. The ensuing sections of this paper will unfold systematically. We will delve into related work, drawing parallels between abalone age prediction and analogous predictive modeling tasks. The proposed methodology will lay the foundation for our exploration, providing a rationale for selecting each predictive model and the anticipated performance based on the dataset's unique characteristics. Through meticulous experiment setups and result discussions, we will bridge theory and practice, evaluating the real-world efficacy of our chosen models.
+
+The forthcoming comparative analysis will serve as the crux of our findings, offering a nuanced understanding of the strengths and weaknesses inherent in each model. As we conclude our research, we will summarize the key takeaways and set the stage for future investigations. This work not only aspires to elevate the predictive accuracy of abalone age determination but also prompts contemplation on potential enhancements, such as incorporating additional environmental variables.
+
+\section{Related Work}
+
+Numerous research endeavors have leveraged machine learning (ML) techniques for predictive tasks across diverse domains. This section provides an overview of prior studies in age prediction, explicitly focusing on the abalone species. These investigations lay the groundwork for our exploration into predicting the age of abalones using various ML models.
+
+Guney et al. \cite{djeddi_abalone_2022} contributed significantly to understanding abalone age prediction. Their work involved a comprehensive analysis of machine learning algorithms, including backpropagation feed-forward neural networks (BPFFNN), K-Nearest Neighbors (KNN), Naive Bayes, Decision Tree, Random Forest, Gauss Naive Bayes, and Support Vector Machine (SVM). The study recognized the importance of age determination for assessing the economic value of abalones and showcased the efficacy of machine learning models in this context. Our research builds upon this foundation by incorporating advanced ML models and expanding the repertoire of methods for abalone age prediction.
+
+A notable study by Misman et al. \cite{misman_prediction_2019} specifically applied artificial neural networks (ANN) to predict the age of abalones. The proposed regression-based ANN model, featuring three hidden layers, demonstrated the ability to predict abalone age efficiently. The economic implications of predicting abalone age, such as aiding farmers and sellers in determining market prices, were underscored. Our research aligns with this approach, incorporating regression-based neural networks, albeit with different architectures, to ascertain the age of abalones from physical measurements. We aim to contribute to the existing body of knowledge by exploring and comparing the performance of multiple ML models on the same abalone dataset.
+
+Moreover, a study by Wang \cite{wang_abalone_nodate} highlighted the limitations of traditional machine learning methods in dealing with complex datasets for abalone age prediction. Applying the Cascade Correlation (Cascor) algorithm, a dynamic neural network approach, demonstrated improved efficiency and effectiveness in classification tasks. This research aligns with our exploration of advanced ML models, such as gradient-boosted decision tree regressors and neural networks, to address the intricacies of predicting abalone age from physical measurements. The study's emphasis on the power of artificial neural networks and dynamic algorithms like Cascor resonates with our research goals.
+
+The existing literature showcases the diverse array of ML models employed for abalone age prediction. Researchers have explored various avenues, from traditional methods like decision trees and support vector machines to advanced techniques such as artificial neural networks and dynamic algorithms like Cascor. Our work aims to contribute to this body of knowledge by rigorously comparing the performance of multiple predictive models on the well-established Abalone dataset, providing insights into their effectiveness and uncovering potential avenues for improvement.
+
+\section{Methodology}
+
+This section discusses the proposed work, including data retrieval, preprocessing, feature engineering, design of compared machine learning algorithms, and analysis of the results.
+
+\subsection{Dataset}
+
+
+This study's Abalone age prediction dataset is sourced from the UC Irvine Machine Learning repository \cite{warwick_nash_abalone_1994}. The dataset was chosen for its relevance to the research objective of predicting the age of abalones based on physical measurements, aiming to provide a more efficient alternative to manual ring counting in their shells. The dataset comprises various features related to the physical characteristics of abalones. The data collection process involved acquiring the dataset, cleaning it, and labeling the target variable, the mollusk's age. The dataset consists of a total of 4178 instances and 9 attributes. As part of the preprocessing steps, we will elaborate on how the dataset was prepared for analysis, including any necessary data normalization or transformation.
+
+\subsection{Preprocessing}
+
+Kaggle rates the usability of the dataset as 10/10, which means that the dataset is fully documented, available, clean, and ready for use. Indeed, out of 4178 entries in the dataset, there are no missing values, duplicate entries, formatting errors, or varying precision between entries. Therefore, there was no need to use data cleaning techniques such as dropping incomplete rows, replacing the missing values with the median, binning, or manually wrangling string data.
+
+One of the features of the dataset is the Sex of the measured Abalone, which is represented as a discrete value of either "M," "F," or "I." Since multiple linear regression is not fit for dealing with discrete values, we decided to use one-hot encoding to transform the "Sex" column into three columns, "M," "F," and "I," each of which contained a binary value, with 1 indicating a particular sex. This transformation allowed us to use this feature along with the rest in the multiple regression model.
+
+The Abalone dataset has multiple features, each with its unique range of values. This non-uniformity has empirically been shown to negatively impact the convergence of machine learning models due to them assigning relative importance to features based on their values rather than predictive power. Therefore, a standardizing methodology has been utilized to standardize the dataset's numerical (not categorical) features. The well-known approach to standardization is to convert the numerical value of a feature in a particular sample to its Z-score. This conversion is performed using the following equation:
+\begin{gather*}
+	Z = \frac{x - \mu}{s}
+\end{gather*}
+where $\mu$ is the mean of the particular feature and $s$ is the standard deviation. Using this strategy, the values of each feature attain a mean of 0 and a variance of 1, which is a more suitable range for machine learning models.
+
+Finally, the original dataset had the target variable column named "Rings" since that is the indicator of an Abalone's age. The column in the dataset has been renamed to "Age" for clarity.
+
+\subsection{Feature selection}
+
+The original dataset had 8 feature columns and 1 column for the target variable. After processing the discrete "Sex" column, that number was increased to 11. It was decided to use all of the feature variables in the machine learning for the results of predicting the age of the Abalones. Table \ref{tab:summary} contains transformed data that was used to train the models:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{lccccccc}
+		\toprule
+		               & Mean          & Std      & Min       & Max       \\
+		\midrule
+		Length         & -5.834718e-16 & 1.000120 & -3.739154 & 2.423480  \\
+		Diameter       & -3.027929e-16 & 1.000120 & -3.556267 & 2.440025  \\
+		Height         & 3.912493e-16  & 1.000120 & -3.335953 & 23.683287 \\
+		Whole weight   & 9.185853e-17  & 1.000120 & -1.686092 & 4.072271  \\
+		Shucked weight & -1.020650e-17 & 1.000120 & -1.614731 & 5.085388  \\
+		Viscera weight & 2.704723e-16  & 1.000120 & -1.643173 & 5.286500  \\
+		Shell weight   & 2.976897e-16  & 1.000120 & -1.705134 & 5.504642  \\
+		M              & 3.658128e-01  & 0.481715 & 0.000000  & 1.000000  \\
+		F              & 3.129040e-01  & 0.463731 & 0.000000  & 1.000000  \\
+		I              & 3.212832e-01  & 0.467025 & 0.000000  & 1.000000  \\
+		\textbf{Age}   & 9.93          & 3.224169 & 1         & 29        \\
+		\bottomrule
+	\end{tabular}
+	\caption{Summary statistics for the dataset.}
+	\label{tab:summary}
+\end{table}
+
+\subsection{Machine Learning model selection}
+
+The study aims to create an Abalone age prediction model by employing three machine learning techniques: multiple linear regression, gradient-boosted decision trees, and neural networks, ordered in order of increasing complexity. The study results would be representative of whether an additional complexity of the algorithm is reflected in its performance on this relatively simple dataset.
+
+\subsubsection{Multiple Linear Regression}
+
+An Ordinary Linear Regression algorithm was chosen to represent the Multiple Linear Regression class of machine learning models, mainly for its simplicity and interpretability. Moreover, regularized algorithms such as Lasso \cite{kim_interior-point_2007}, Ridge \cite{rifkin_notes_nodate}, and Elastic-Net \cite{zou_degrees_2007} would require an investigation of the effects of $l_1$ and $l_2$ regularization coefficients on the performance of the algorithm, which is outside the scope of this paper. In its simplest form, multiple linear regression minimizes the following quantity:
+
+\begin{gather*}
+	\min_{\text{w}}||Xw - y ||_2^2
+\end{gather*}
+where $w$ is an array of coefficients corresponding to each feature.
+
+\subsubsection{Gradient-boosted Decision Trees}
+
+The choice to utilize Ada-boosted Decision Trees as representatives of gradient-boosted decision tree regressors in this study stems from the intriguing exploration of Decision Trees (DTs) typically employed in classification tasks and the unique opportunity to evaluate their performance in regression. Decision Trees, renowned for their interpretability and flexibility, are traditionally associated with classification problems, making their application to regression an area of interest. The Ada-boost algorithm \cite{drucker_improving_nodate} was specifically chosen as it is a well-established gradient boosting technique, known for enhancing the predictive power of weak learners like Decision Trees. Ada-boost operates iteratively, assigning more weight to instances with the most significant error in each iteration, thereby sequentially improving the model's accuracy. This ensemble approach is expected to be advantageous in refining the predictive capabilities of Decision Trees for regression tasks, providing a robust representation of gradient-boosted decision tree regressors in our comparative analysis.
+
+\subsubsection{Neural Networks}
+
+
+The neural network (NN) selected for this study is a powerful tool for approximating complex functions, making it particularly well-suited for regression tasks. Leveraging the inherent capability of neural networks to approximate any function given a sufficient number of neurons, we tailored our architecture to the simplicity of the abalone age prediction dataset. The chosen neural network comprises two inner layers, each housing 64 neurons. This streamlined architecture was designed to strike a balance between model complexity and dataset intricacy, ensuring efficient learning without unnecessary overfitting. The rectified linear unit (ReLU) activation function was employed, aligning with industry standards due to its ability to introduce nonlinearity to the model, enabling it to learn intricate patterns within the data. For training, we employed the Adam optimizer, which is currently considered state-of-the-art in optimization algorithms. The Adam optimizer's default settings were utilized, reflecting a commitment to transparency and reproducibility while leveraging the optimizer's adaptive learning rates and momentum-like features.
+
+\subsection{Performance Evaluation}
+
+The chosen evaluation metric for this study was the Root Mean Squared Error, a widely recognized measure that quantifies the square root of the mean of squared differences between the predicted and actual values. This metric provides a comprehensive insight into the accuracy of the models by emphasizing the significance of large prediction errors. Moreover, it is more intuitive since the error units are the same as the target variable, compared to squared units of MSE. Mathematically, RMSE has the following formula:
+\begin{gather*}
+	RMSE = \sqrt{\sum_{i = 1}^n \frac{(\hat{y}_i - y_i)^2}{n}}
+\end{gather*}
+where $n$ is the number of samples in the dataset.
+
+\section{Experimental setups and results discussion}
+
+In this section, we discuss the experimental setups for each of the machine learning models and the results of the experiments.
+
+\subsection{Experimental setup}
+
+The experiments were performed on a Macbook Pro 15 2017 running macOS Ventura 13.6.1 with an Intel® Core™ i7-7820HQ CPU running at 2.9 GHz, 4 cores, 16 GB RAM, and a 512 GB SSD. The Python version utilized was 3.11.5. Various third-party libraries were utilized to facilitate the experimentation process:
+
+\begin{itemize}
+	\item \textbf{Pandas} 2.1.1 \cite{mckinney_data_2010} was used for data manipulation and analysis.
+	\item \textbf{NumPy} 1.21.2 \cite{harris_array_2020} was used for scientific computing.
+	\item \textbf{Matplotlib} 3.4.3 \cite{hunter_matplotlib_2007} was used for data visualization.
+	\item \textbf{SciKit-Learn} 1.3 \cite{pedregosa_scikit-learn_2011} was used for machine learning, specifically multiple linear regression and gradient-boosted decision tree regressors.
+	\item \textbf{PyTorch} 2.1 \cite{paszke_pytorch_2019} was used for neural networks.
+\end{itemize}
+
+In evaluating the performance of the machine learning models, the dataset was systematically divided into training and testing sets, with a standard split ratio of 70:30. This division ensured that the models were trained on a substantial portion of the data while retaining a separate and unseen subset for rigorous evaluation. The performance assessment primarily focused on the test dataset, serving as a robust benchmark for model generalization. The process was performed using the SciKit-Learn train-test-split functionality.
+
+\subsubsection{Multiple Linear Regression}
+
+The multiple linear regression model was configured with default parameters and lacked any form of regularization. Sticking with default settings aimed to maintain simplicity and transparency in the modeling process. The dataset was not subjected to feature engineering to generate second or higher-order regression terms in this setup. Emphasis was placed on preserving linearity, as all relationships between the features were assumed to be linear. This decision aligns with the fundamental assumption of multiple linear regression, which assumes a linear relationship between the independent and dependent variables. Refraining from introducing higher-order terms or complex feature interactions enhances the model's interpretability, allowing for a clear understanding of how each feature contributes to the prediction of abalone age. This straightforward approach aligns with the foundational principles of multiple linear regression while providing a benchmark for comparison against more complex models in the subsequent analysis.
+
+\subsubsection{Gradient-boosted Decision Trees}
+
+The experimental setup for the gradient-boosted decision tree regressor predominantly employed default parameters, with careful considerations for effective model performance. The base regressor was selected as the \texttt{DecisionTreeRegressor} with \texttt{max\_depth=10}. This decision was driven by the aim to allow the base regressors to adeptly capture nuanced patterns within smaller subsets of the Abalone dataset while maintaining simplicity to facilitate the viability and speed of the gradient boosting process. A \texttt{max\_depth} of 10 strikes a balance, preventing overfitting while ensuring the individual decision trees can sufficiently contribute to the ensemble. The AdaBoost regressor, an integral part of the gradient-boosting ensemble, was configured with 50 base estimators. This choice represents a deliberate trade-off between model complexity and computational efficiency, acknowledging that an ensemble with 50 base estimators provides a robust representation of the data's underlying patterns while maintaining a reasonable level of computational speed. The careful selection of these parameters in the gradient-boosted decision tree regressor setup aims to optimize predictive accuracy while managing computational resources effectively.
+
+\subsubsection{Neural Networks}
+
+For the neural network experimental setup, the architecture consists of an input layer with 10 neurons, each corresponding to a specific feature of the Abalone dataset. Two hidden layers follow, each comprising 64 neurons, striking a balance between model complexity and computational efficiency. Rectified Linear Unit (ReLU) activation functions are employed in the hidden layers, reflecting an industry-standard choice for introducing nonlinearity and enabling the network to capture complex relationships within the data. The output layer comprises a single neuron responsible for predicting the age of the Abalone. The Adam optimizer is employed, utilizing standard parameter values of 0.99 for the exponential decay rates of past gradient moments and 0.999 for the square of past gradient moments. A critical aspect of the experimental setup is the learning rate, a hyperparameter influencing the step size during optimization. To strike a balance between rapid convergence and model stability, we have chosen a learning rate of 0.001. The model was trained for 20 epochs and was evaluated on the test set after every epoch to track its performance trends.
+
+\subsection{Experimental result analysis}
+
+This subsection discusses the results of the experiments performed on the three machine learning models. The three models were constructed, trained, and evaluated. Afterward, the models were used to predict the test set, and their RMSE was calculated. Table \ref{tab:results} contains the experimentally obtained results:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{lc}
+		\toprule
+		Model               & RMSE     \\
+		\midrule
+		Multiple Regression & 2.187416 \\
+		Gradient Boosting   & 2.195712 \\
+		Neural Network      & 2.113594 \\
+		\bottomrule
+	\end{tabular}
+	\caption{RMSE of the three models on the test set.}
+	\label{tab:results}
+\end{table}
+
+As can be seen, the neural network model performed the best, with the lowest RMSE of 2.113594. The multiple linear regression model performed slightly worse, with the RMSE of 2.187416. The gradient boosting model was the worst, with an RMSE of 2.195712.
+
+The performance of the gradient-boosted regressors could be better, especially given the complexity of the model. While the exact cause of this lackluster performance is hard to determine, it might be due to the use of decision trees outside their usual domain, classification tasks. It shall also be noted that the model was much slower to train than the multiple linear regression, taking about 5-10 seconds instead of 200ms for the latter. Overall, this result demonstrates that the complexity of the model is not a guarantee of great performance.
+
+With that being said, the slowest and most complex model of the three, the Neural Network, has performed the best. Its loss graph on the train and test sets was fairly smooth, and the model relatively quickly converged to a close-to-optimal solution. Figure \ref{fig:nn_loss} shows the loss graph of the model:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\textwidth]{nn\_loss.png}
+	\caption{Loss graph of the neural network model.}
+	\label{fig:nn_loss}
+\end{figure}
+It is worth noting, however, that at the time of stopping the training process, the training loss was still slowly trending downward, so there is merit in evaluating whether a more extended training process would yield an even better result.
+
+\section{Comparison}
+
+This section compares the results of our study with previous works in the field of abalone age prediction. Table \ref{tab:comparison} compares our results with those from other referenced studies. Note that "—" means that the researchers did not use the same approach as our study (\cite{wang_abalone_nodate} used a classification algorithm and, as such, did not provide the MSE metrics).
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{lcc}
+		\toprule
+		Study                         & Model          & RMSE     \\
+		\midrule
+		\cite{djeddi_abalone_2022}    & BPFFNN         & 1.88     \\
+		\cite{misman_prediction_2019} & ANN            & 1.74     \\
+		\cite{wang_abalone_nodate}    & Cascor         & —        \\
+		\textbf{This study}           & Neural Network & 2.113594 \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison of the results of this study with previous works.}
+	\label{tab:comparison}
+\end{table}
+
+As can be seen, the results of our study are comparable to those of other researchers. The neural network model performed slightly worse than the BPFFNN and ANN models, but the difference is insignificant. The results of this study are also difficult to compare to the Cascor model since they operate within different problem spaces (regression vs classification). However, these results demonstrate that there is more complexity in the dataset that was evident and that more elaborate models can capture it and perform better when predicting the Abalone's age.
+
+\section{Conclusion}
+
+In this work, we explored the application of machine learning models to predict the age of abalones based on physical measurements. The proposed methodology involved a comprehensive analysis of multiple linear regression, gradient-boosted decision tree regressors, and neural networks. The experimental setups were designed to balance model complexity and computational efficiency, ensuring that the models were robust and viable for real-world applications. The ensuing comparative analysis provided a nuanced understanding of the strengths and weaknesses inherent in each model, offering insights into their effectiveness and uncovering potential avenues for improvement. The results of this study demonstrated that the neural network model performed the best, followed by the multiple linear regression model, and the gradient boosting model was the worst. The results of this study are comparable to those of other researchers, demonstrating that there is more complexity in the dataset that was evident and that more elaborate models can capture it and perform better when predicting the Abalone's age.
+
+Several areas would be fruitful to investigate in future works. For instance, our multiple linear regression model used no regularization techniques. It is viable that by using regularization, a better performance can be achieved. Moreover, there is a potential for improving the performance of the gradient-boosted regressor, either by adjusting the number of estimators or replacing the base estimator with a different one. Finally, more advanced neural network architectures, such as CNN or RNN, could improve the already good performance of our neural network.
+
+\section*{Acknowledgements}
+
+The author would like to thank Prof. Haiyan Wang for the opportunity to work on this project and for providing the necessary background knowledge to be successful in its completion.
+
+\section*{Author contributions}
+
+The author confirms sole responsibility for the authorship and the accuracy of the content of this paper.
+
+\section*{Ethical statement}
+
+The author confirms that this work is original and has not been published elsewhere, nor is it currently under consideration for publication elsewhere. This article contains no studies with human participants or animals performed by the author.
+
+\section*{Data availability}
+
+The source dataset is available at \cite{warwick_nash_abalone_1994}. The Jupyter notebook used in the experiments is available at \cite{mykhaylov_general_nodate}
+
+\section*{References}
+\printbibliography[heading=none]
+
+\end{document}
